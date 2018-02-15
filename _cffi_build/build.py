@@ -38,6 +38,7 @@ _modules = {
     'ecdh': Source(absolute("_cffi_build/secp256k1_ecdh.h"), "#include <secp256k1_ecdh.h>", ),
     'recovery': Source(absolute("_cffi_build/secp256k1_recovery.h"), "#include <secp256k1_recovery.h>", ),
     'schnorr': Source(absolute("_cffi_build/secp256k1_schnorr.h"), "#include <secp256k1_schnorr.h>", ),
+    'threshold': Source(absolute("_cffi_build/secp256k1_threshold.h"), '#include <secp256k1_threshold.h'),
 }
 
 

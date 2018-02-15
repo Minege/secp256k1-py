@@ -38,6 +38,25 @@ class Base(object):
             self._destroy(self.ctx)
             self.ctx = None
 
+class ECDSAThreshold:
+    def __init__(self):
+        self.params = ffi.new('secp256k1_threshold_signature_params')
+        self.first_message = lib.secp256k1_threshold_init_call_msg(ffi.new('secp256k1_threshold_signature_params *'))
+        self.second_message = lib.secp256k1_threshold_init_challenge_msg(ffi.new('secp256k1_threshold_challenge_msg *'))
+        self.third_message = lib.secp256k1_threshold_init_response_challenge_msg(ffi.new('secp256k1_threshold_response_challenge_msg *'))
+        self.fourth_message = lib.secp256k1_threshold_init_terminate_msg(ffi.new('secp256k1_threshold_terminate_msg *'))
+
+    def secp256k1_threshold_params_parse(self, input):
+        input = ffi.new('unsigned char[%d]' % len(input))
+        len_input = ffi.new('size_t',len(input))
+        res = lib.secp256k1_threshold_params_parse(self.ctx, self.params, input, len_input)
+        assert res == 1
+        # Params have been imported
+
+    def secp256k1_threshold_params_serialize(self):
+        outputlen = ffi.new('size_t *')
+        res = lib.secp256k1_threshold_params_serialize(self.ctx, outputlen, self.params, self.flag)
+        return bytes(ffi.buffer(res, outputlen[0]))
 
 class ECDSA:  # Use as a mixin; instance.ctx is assumed to exist.
 

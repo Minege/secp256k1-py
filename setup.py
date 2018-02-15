@@ -60,6 +60,7 @@ def download_library(command):
     libdir = absolute("libsecp256k1")
     if os.path.exists(os.path.join(libdir, "autogen.sh")):
         # Library already downloaded
+        print("Library already downloaded")
         return
     if not os.path.exists(libdir):
         command.announce("downloading libsecp256k1 source code", level=log.INFO)
@@ -206,6 +207,7 @@ class build_clib(_build_clib):
                 "--enable-experimental",
                 "--enable-module-ecdh",
                 "--enable-module-schnorr",
+                "--enable-module-threshold" # Module threshold added
             ])
 
         log.debug("Running configure: {}".format(" ".join(cmd)))
