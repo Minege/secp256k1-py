@@ -40,24 +40,110 @@ class Base(object):
 
 class ECDSAThreshold:
     def __init__(self):
-        self.params = ffi.new('secp256k1_threshold_signature_params')
+        self.params = ffi.new('secp256k1_threshold_signature_params *')
         self.first_message = lib.secp256k1_threshold_init_call_msg(ffi.new('secp256k1_threshold_signature_params *'))
         self.second_message = lib.secp256k1_threshold_init_challenge_msg(ffi.new('secp256k1_threshold_challenge_msg *'))
         self.third_message = lib.secp256k1_threshold_init_response_challenge_msg(ffi.new('secp256k1_threshold_response_challenge_msg *'))
         self.fourth_message = lib.secp256k1_threshold_init_terminate_msg(ffi.new('secp256k1_threshold_terminate_msg *'))
 
     def secp256k1_threshold_params_parse(self, input):
-        input = ffi.new('unsigned char[%d]' % len(input))
-        len_input = ffi.new('size_t',len(input))
-        res = lib.secp256k1_threshold_params_parse(self.ctx, self.params, input, len_input)
+        input_c = ffi.new('unsigned char[%d]' % len(input))
+        input_c = input  #TODO: Not sure if it works
+        res = lib.secp256k1_threshold_params_parse(self.ctx, self.params, input_c, len(input))
         assert res == 1
         # Params have been imported
 
-    def secp256k1_threshold_params_serialize(self):
+    """
+    If not parameter object given, serialize the class's one.
+    
+    In: Optional parameter object to serialize
+    
+    Return: Serialized parameter object
+    """
+    def secp256k1_threshold_params_serialize(self, params=0):
         outputlen = ffi.new('size_t *')
-        res = lib.secp256k1_threshold_params_serialize(self.ctx, outputlen, self.params, self.flag)
+        if(params == 0):
+            # Nothing, using the class one
+            res = lib.secp256k1_threshold_params_serialize(self.ctx, outputlen, self.params, self.flag)
+        else:
+            res = lib.secp256k1_threshold_params_serialize(self.ctx, outputlen, params, self.flag)
         return bytes(ffi.buffer(res, outputlen[0]))
 
+    def secp256k1_threshold_call_msg_parse(self, input):
+        input_c = ffi.new('unsigned char[%d]' % len(input))
+        input_c = input  #TODO: Not sure if it works
+        res = lib.secp256k1_threshold_call_msg_parse(self.first_message, input_c, len(input))
+        assert res == 1
+
+    def secp256k1_threshold_call_msg_serialize(self):
+        outputlen = ffi.new('size_t *')
+        res = lib.secp256k1_threshold_call_msg_serialize(outputlen, self.first_message)
+        return bytes(ffi.buffer(res, outputlen[0]))
+
+    def secp256k1_threshold_challenge_msg_parse(self, input):
+        input_c = ffi.new('unsigned char[%d]' % len(input))
+        input_c = input  #TODO: Not sure if it works
+        res = lib.secp256k1_threshold_challenge_msg_parse(self.ctx, self.second_message, input_c, len(input))
+        assert res == 1
+
+    def secp256k1_threshold_challenge_msg_serialize(self):
+        outputlen = ffi.new('size_t *')
+        res = lib.secp256k1_threshold_challenge_msg_serialize(self.ctx, outputlen, self.second_message)
+        return bytes(ffi.buffer(res, outputlen[0]))
+
+    def secp256k1_threshold_response_challenge_msg_parse(self, input):
+        input_c = ffi.new('unsigned char[%d]' % len(input))
+        input_c = input  #TODO: Not sure if it works
+        res = lib.secp256k1_threshold_challenge_msg_parse(self.ctx, self.third_message, input_c, len(input))
+        assert res == 1
+
+    def secp256k1_threshold_response_challenge_msg_serialize(self):
+        outputlen = ffi.new('size_t *')
+        res = lib.secp256k1_threshold_challenge_msg_serialize(self.ctx, outputlen, self.third_message)
+        return bytes(ffi.buffer(res, outputlen[0]))
+
+    def secp256k1_threshold_terminate_msg_parse(self, input):
+        input_c = ffi.new('unsigned char[%d]' % len(input))
+        input_c = input  #TODO: Not sure if it works
+        res = lib.secp256k1_threshold_challenge_msg_parse(self.ctx, self.fourth_message, input_c, len(input))
+        assert res == 1
+
+    def secp256k1_threshold_terminate_msg_serialize(self):
+        outputlen = ffi.new('size_t *')
+        res = lib.secp256k1_threshold_terminate_msg_serialize(self.ctx, outputlen, self.fourth_message)
+        return bytes(ffi.buffer(res, outputlen[0]))
+
+    def secp256k1_threshold_privkey_parse(self):
+        secshare = ffi.new("")
+        paillierkey = ffi.new("")
+        pairedkey = ffi.new("")
+        zkp
+        pairedpubkey
+        pubkey
+        res = lib.secp256k1_threshold_privkey_parse(self.ctx, self.params.k, )
+        assert res == 1
+            const
+        secp256k1_context * ctx,
+        secp256k1_scalar * secshare,
+        secp256k1_paillier_privkey * paillierkey,
+        secp256k1_paillier_pubkey * pairedkey,
+        secp256k1_eczkp_parameter * zkp,
+        secp256k1_pubkey * pairedpubkey,
+        secp256k1_pubkey * pubkey,
+        const
+        unsigned
+        char * input,
+        size_t
+        inputlen
+    def secp256k1_threshold_call_create():
+
+    def secp256k1_threshold_call_received():
+
+    def secp256k1_threshold_challenge_received():
+
+    def secp256k1_threshold_response_challenge_received():
+
+    def secp256k1_threshold_terminate_received():
 class ECDSA:  # Use as a mixin; instance.ctx is assumed to exist.
 
     def ecdsa_serialize(self, raw_sig):
